@@ -1,9 +1,7 @@
 from cmath import pi
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy as sp
 from scipy.integrate import odeint
-from scipy.integrate import solve_ivp
 
 """Differential Equation"""
 def dmfdt(t,mf):
@@ -37,7 +35,7 @@ def dmfdt(t,mf):
     
     ### Fuel Mass ODE
     e_e = 0.3           # engine efficiency
-    E = 46*10^6         # energy density (J/kg) for gasoline 
+    E = 46*(10**6)      # energy density (J/kg) for gasoline 
     Pe = F_neg*v        # Power exerted by the car (W)
 
     return -Pe/(e_e*E) # Derivative of fuel mass with respect to time
@@ -58,21 +56,28 @@ mf0 = V0*convV*roeg # Initial mass of fuel (kg)
 # region
 
 ### Time
-t_total = 1 # Total time run (hrs)
+t_total = 10 # Total time run (hrs)
 t = np.linspace(0, int(t_total*3600), int(t_total*3600)) # Creates evenly spaced time values up to t_total
-t_min = t#/60
+t_min = t/60 # Converts the time array into minutes
+
 ### Solver
-sol = odeint(dmfdt, y0=mf0, t=t, tfirst=True)
-#print(sol.T[0])
+sol = odeint(dmfdt, # Solves the given function
+    y0=mf0,         # Initial y value
+    t=t,            # Time array
+    tfirst=True)    # Tells the solver the the x-variable comes first in the function
+
+Vf = (sol.T[0]/roeg)/convV # Converts the solution array into volume (gal)
 
 # endregion
 
 """Plotting"""
+# region 
 plt.figure(figsize=(10, 10))
 plt.title('Fuel Mass vs Time')
 plt.xlabel('Time (min)')
 plt.ylabel('Fuel Mass (kg)')
-plt.scatter(t_min,sol.T[0], color='blue')
+plt.scatter(t_min,Vf, color='black')
 #plt.scatter(x_d,y_d, color='red')
 #plt.legend(['No Drag','With Drag','Terminal Velocity'])
 plt.show()
+# endregion
